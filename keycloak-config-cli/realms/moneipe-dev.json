@@ -1,0 +1,22 @@
+{
+  "realm": "moneipe-dev",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "moneipe-frontend",
+      "name": "Moneipe Frontend (dev)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}
