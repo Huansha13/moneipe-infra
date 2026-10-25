@@ -1,0 +1,32 @@
+# BD de gastos (Postgres en Docker, fuera del clúster) expuesta a los Pods con nombre estable.
+# La IP puede cambiar; si cambia, actualiza solo este Endpoints.
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-gastos
+  namespace: moneipe-dev
+  labels:
+    app.kubernetes.io/part-of: moneipe
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: db-gastos
+  namespace: moneipe-dev
+  labels:
+    app.kubernetes.io/part-of: moneipe
+    app.kubernetes.io/component: database
+subsets:
+  - addresses:
+      - ip: 192.168.1.113
+    ports:
+      - port: 5432
+        protocol: TCP

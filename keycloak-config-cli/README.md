@@ -4,7 +4,7 @@
 
 - Keycloak 26.5.5 y PostgreSQL 16 corren en `moneipe-keycloak`.
 - PostgreSQL usa un PVC `local-path` de 5 GiB en el disco del servidor. No borres el PVC; prepara backups.
-- El tema `theme-moneipe` está en `kubernetes/instance/theme-moneipe/`.
+- El tema `theme-moneipe` está en `kubernetes/keycloak/theme-moneipe/`.
 - Los realms se configuran por ambiente con Config CLI: `moneipe-dev`, `moneipe-qa`, `moneipe-prd`.
 - El Keycloak Docker de `/home/frank/docker/moneipe` es independiente: no modificarlo ni detenerlo.
 - No guardar secretos, usuarios reales ni archivos `.env` en Git.
@@ -28,7 +28,7 @@ sudo k3s kubectl -n moneipe-keycloak get pods,services,pvc,ingress
 Aplicar Keycloak, el tema y el Ingress:
 
 ```bash
-sudo k3s kubectl apply -k /home/frank/moneipe-app/infra/keycloak-config-cli/kubernetes/instance
+sudo k3s kubectl apply -k /home/frank/moneipe-app/infra/keycloak-config-cli/kubernetes/keycloak
 sudo k3s kubectl -n moneipe-keycloak rollout status deployment/keycloak --timeout=300s
 ```
 

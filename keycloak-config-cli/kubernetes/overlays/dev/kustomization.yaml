@@ -5,7 +5,7 @@ namespace: moneipe-keycloak
 nameSuffix: -dev
 
 resources:
-  - ../../base
+  - ../../cli
 
 configMapGenerator:
   - name: keycloak-config-cli-realm
