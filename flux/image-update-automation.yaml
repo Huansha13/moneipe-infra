@@ -1,0 +1,24 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: moneipe-image-updater
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: moneipe-infra
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: flux@moneipe.local
+        name: flux-image-automation
+      messageTemplate: "chore: update image to {{range .Updated.Images}}{{.}}{{end}}"
+    push:
+      branch: main
+  update:
+    path: ./kubernetes
+    strategy: Setters

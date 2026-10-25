@@ -1,0 +1,17 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: api-gateway
+  namespace: flux-system
+spec:
+  image: ghcr.io/huansha13/moneipe-ms-api-gateway
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: ms-control-gastos
+  namespace: flux-system
+spec:
+  image: ghcr.io/huansha13/moneipe-ms-control-gastos
+  interval: 5m

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: ghcr.io/huansha13/moneipe-ms-api-gateway:dev
+          image: ghcr.io/huansha13/moneipe-ms-api-gateway:dev # {"$imagepolicy": "flux-system:api-gateway"}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

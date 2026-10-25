@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: ms-control-gastos
-          image: ghcr.io/huansha13/moneipe-ms-control-gastos:dev
+          image: ghcr.io/huansha13/moneipe-ms-control-gastos:dev # {"$imagepolicy": "flux-system:ms-control-gastos"}
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

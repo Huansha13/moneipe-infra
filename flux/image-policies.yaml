@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: api-gateway
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: api-gateway
+  policy:
+    alphabetical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: ms-control-gastos
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ms-control-gastos
+  policy:
+    alphabetical:
+      order: asc
