@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-inversiones
+  namespace: moneipe-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ms-inversiones }
+  template:
+    metadata:
+      labels: { app: ms-inversiones }
+    spec:
+      containers:
+        - name: ms-inversiones
+          image: ghcr.io/huansha13/moneipe-ms-inversiones:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: DB_HOST
+              value: '10.42.0.1'
+            - name: DB_PORT
+              value: '5432'
+            - name: DB_NAME
+              value: 'moneipe_inversiones_dev'
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-inversiones-db
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-inversiones-db
+                  key: DB_PASSWORD
+            - name: KEYCLOAK_ISSUER_URI
+              value: 'https://auth-moneipe-k3-dev.huansha.win/realms/moneipe-dev'
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8082 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-inversiones
+  namespace: moneipe-dev
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: ms-inversiones

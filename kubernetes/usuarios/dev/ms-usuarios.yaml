@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-usuarios
+  namespace: moneipe-dev
+  labels:
+    app.kubernetes.io/part-of: moneipe
+    app.kubernetes.io/component: usuarios
+    app.kubernetes.io/environment: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ms-usuarios }
+  template:
+    metadata:
+      labels: { app: ms-usuarios }
+    spec:
+      containers:
+        - name: ms-usuarios
+          image: ghcr.io/huansha13/moneipe-ms-users:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: DB_HOST
+              value: "10.42.0.1"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "moneipe_usuarios_dev"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-usuarios-db
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-usuarios-db
+                  key: DB_PASSWORD
+            - name: KEYCLOAK_ISSUER_URI
+              value: "https://auth-moneipe-k3-dev.huansha.win/realms/moneipe-dev"
+            - name: KEYCLOAK_ADMIN_BASE_URL
+              value: "https://auth-moneipe-k3-dev.huansha.win"
+            - name: KEYCLOAK_REALM
+              value: "moneipe-dev"
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-usuarios-keycloak
+                  key: CLIENT_ID
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: moneipe-usuarios-keycloak
+                  key: CLIENT_SECRET
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8084 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health, port: 8084 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-usuarios
+  namespace: moneipe-dev
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8084
+      targetPort: 8084
+  selector:
+    app: ms-usuarios
