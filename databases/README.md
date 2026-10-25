@@ -23,11 +23,16 @@ databases/postgres/dev/
     ├── inversiones.env
     ├── notificaciones.env
     └── usuarios.env
-keycloak/runtime.env
+keycloak/
+├── dev/runtime.env
+├── qa/       (vacío hasta configurar QA)
+└── prd/      (vacío hasta configurar PRD)
 ```
 
 Los directorios tienen permisos `700` y los archivos `600`. No copies estos
 archivos al repositorio ni compartas su contenido.
+El `runtime.env` existente corresponde al Keycloak configurado para dev; las
+credenciales de QA y producción no se han creado.
 
 Cada ambiente PostgreSQL tiene un contenedor y un volumen Docker propios. Mover
 estos archivos Compose no mueve los datos: los volúmenes conservan sus nombres
