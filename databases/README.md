@@ -21,8 +21,9 @@ databases/postgres/dev/
 └── apps/
     ├── gastos.env
     ├── inversiones.env
-    ├── notificaciones.env
     └── usuarios.env
+databases/mongo/dev/apps/
+└── notificaciones.env
 keycloak/
 ├── dev/runtime.env
 ├── qa/       (vacío hasta configurar QA)
@@ -33,6 +34,9 @@ Los directorios tienen permisos `700` y los archivos `600`. No copies estos
 archivos al repositorio ni compartas su contenido.
 El `runtime.env` existente corresponde al Keycloak configurado para dev; las
 credenciales de QA y producción no se han creado.
+`notificaciones.env` pertenece al cliente Mongo de `ms-notificaciones` y
+contiene la configuración local `MONGO_URI` junto con el issuer de Keycloak.
+En Kubernetes, `MONGO_URI` se obtiene del Secret `moneipe-notificaciones-mongo`.
 
 Cada ambiente PostgreSQL tiene un contenedor y un volumen Docker propios. Mover
 estos archivos Compose no mueve los datos: los volúmenes conservan sus nombres
