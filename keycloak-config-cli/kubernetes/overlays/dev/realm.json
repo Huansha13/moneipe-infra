@@ -1,0 +1,28 @@
+{
+  "realm": "moneipe-dev",
+  "enabled": true,
+  "bruteForceProtected": true,
+  "loginTheme": "theme-moneipe",
+  "clients": [
+    {
+      "clientId": "moneipe-frontend",
+      "name": "Moneipe Frontend (dev)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}

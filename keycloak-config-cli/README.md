@@ -1,64 +1,42 @@
-# Keycloak Config CLI
+# Keycloak de Moneipe en K3s
 
-Este directorio contiene un ejemplo para aplicar como código el realm `moneipe-dev` en una instancia **nueva** de Keycloak del laboratorio K3s.
+## Estado y límites
 
-## Límites de seguridad y alcance
+- Keycloak 26.5.5 y PostgreSQL 16 corren en `moneipe-keycloak`.
+- PostgreSQL usa un PVC `local-path` de 5 GiB en el disco del servidor. No borres el PVC; prepara backups.
+- El tema `theme-moneipe` está en `kubernetes/instance/theme-moneipe/`.
+- Los realms se configuran por ambiente con Config CLI: `moneipe-dev`, `moneipe-qa`, `moneipe-prd`.
+- El Keycloak Docker de `/home/frank/docker/moneipe` es independiente: no modificarlo ni detenerlo.
+- No guardar secretos, usuarios reales ni archivos `.env` en Git.
 
-- El Job no se ha ejecutado y no se debe aplicar todavía.
-- El destino esperado es el Service interno `keycloak.moneipe-keycloak.svc.cluster.local:8080`, no el Keycloak Docker actual.
-- El Keycloak existente (`26.7.0`) permanece intacto. El primer destino de laboratorio debe usar Keycloak `26.5.5`, compatible con la imagen Config CLI `6.5.1-26.5.5` fijada por digest en el Job.
-- El realm de desarrollo y su cliente se crean sin usuarios ni secretos de cliente.
-- Los `redirectUris` y `webOrigins` están vacíos intencionalmente. El frontend no podrá iniciar sesión hasta agregar el origen exacto que Vercel asigne y volver a importar la configuración.
-- No se incluye un manifiesto `Secret`. Antes de ejecutar el Job, debe existir `keycloak-config-cli-admin` en el namespace `moneipe-keycloak`, con claves `KEYCLOAK_USER` y `KEYCLOAK_PASSWORD`. Debe ser una cuenta de servicio dedicada con los permisos mínimos necesarios para crear/actualizar realms y clientes; no usar la cuenta bootstrap ni guardar sus credenciales en Git.
+## Dominios dev
 
-## Archivos
+- `auth-moneipe-k3-dev.huansha.win`: login OIDC del frontend.
+- La consola administrativa no tiene hostname público separado; administrarla por `port-forward` + SSH.
+- `api-moneipe-k3-dev.huansha.win`: reservado para el API Gateway.
+- Tunnel → Traefik: `http://192.168.1.113:32109`. No publicar Kubernetes API, Portainer ni PostgreSQL.
+- El hostname `auth-...` es público para OIDC; no usarlo para administrar Keycloak. La consola estará accesible solo por el túnel SSH local.
 
-- `realms/moneipe-dev.json`: definición mínima del realm y cliente OIDC público del frontend.
-- `kustomization.yaml` y `kubernetes/`: namespace y Job de importación. Kustomize genera el ConfigMap a partir del JSON.
+## Comandos frecuentes
 
-La configuración evita sustituciones de variables. En Keycloak Config CLI estas están deshabilitadas por defecto; habilitarlas solo si un caso real lo necesita y nunca para introducir secretos en el archivo del realm.
-
-## Prerrequisitos antes de ejecutar
-
-1. Crear y verificar una instancia Keycloak independiente en K3s, versión `26.5.5`, en el namespace `moneipe-keycloak`, con un Service llamado `keycloak`.
-2. Confirmar respaldos y estrategia de almacenamiento para la instancia nueva.
-3. Provisionar el Secret de autenticación fuera de Git.
-4. Obtener la URL de Vercel y agregarla de forma explícita a `redirectUris` y `webOrigins` del cliente.
-5. Revisar el JSON y el Job; aplicar solo después de autorización explícita.
-
-## Validación local
-
-Desde la raíz del repositorio:
+Ver estado:
 
 ```bash
-python3 -m json.tool keycloak-config-cli/realms/moneipe-dev.json
-kubectl kustomize keycloak-config-cli
+sudo k3s kubectl -n moneipe-keycloak get pods,services,pvc,ingress
 ```
 
-Estos comandos solo validan/renderizan los archivos; no consultan ni modifican el clúster.
-
-## Ejecución futura
-
-El Job es de una sola ejecución. Primero deben cumplirse todos los prerrequisitos y existir el Service y el Secret. Entonces:
+Aplicar Keycloak, el tema y el Ingress:
 
 ```bash
-kubectl apply -k keycloak-config-cli
-kubectl -n moneipe-keycloak wait --for=condition=complete job/keycloak-config-cli-dev --timeout=10m
-kubectl -n moneipe-keycloak logs job/keycloak-config-cli-dev
+sudo k3s kubectl apply -k /home/frank/moneipe-app/infra/keycloak-config-cli/kubernetes/instance
+sudo k3s kubectl -n moneipe-keycloak rollout status deployment/keycloak --timeout=300s
 ```
 
-Si se vuelve a ejecutar después de cambiar el JSON, eliminar únicamente el Job completado antes de aplicar de nuevo, porque los Jobs no permiten cambiar su plantilla:
-
+en terminal de mac para acceder por port-forward
 ```bash
-kubectl -n moneipe-keycloak delete job keycloak-config-cli-dev
-kubectl apply -k keycloak-config-cli
+sudo k3s kubectl -n moneipe-keycloak port-forward svc/keycloak 18080:8080
 ```
 
-La integración con Argo CD o Flux se definirá después; no configurar sincronización automática de este Job hasta decidir el mecanismo de reejecución y revisión.
+Acceso temporal a la consola: ejecuta `kubectl port-forward svc/keycloak 18080:8080` en el servidor y `ssh -N -L 18080:127.0.0.1:18080 frank@192.168.1.113` en el Mac; abre `http://127.0.0.1:18080`. Cerrar los túneles no detiene Keycloak.
 
-## Versiones fijadas
-
-- Keycloak: `26.5.5` para el nuevo laboratorio, a fin de coincidir con la versión de Keycloak para la que se publicó la imagen del CLI seleccionada.
-- Config CLI: `6.5.1-26.5.5`, fijada por digest en `kubernetes/job.yaml`.
-
-La versión del CLI fue contrastada con las etiquetas públicas de [Quay](https://quay.io/repository/adorsys/keycloak-config-cli?tab=tags). Volver a comprobar compatibilidad antes de actualizar cualquiera de las dos imágenes.
+El overlay dev configura `moneipe-dev` y el tema. Antes de ejecutar su Job, confirma el Secret `keycloak-config-cli-admin`; el JSON no importa usuarios. QA y PRD necesitan sus dominios y revisión antes de aplicarse.

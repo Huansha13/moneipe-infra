@@ -1,11 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: keycloak-config-cli-dev
+  name: keycloak-config-cli
   labels:
     app.kubernetes.io/name: keycloak-config-cli
     app.kubernetes.io/part-of: moneipe
-    app.kubernetes.io/environment: dev
 spec:
   backoffLimit: 0
   activeDeadlineSeconds: 600
@@ -15,7 +14,6 @@ spec:
       labels:
         app.kubernetes.io/name: keycloak-config-cli
         app.kubernetes.io/part-of: moneipe
-        app.kubernetes.io/environment: dev
     spec:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -41,6 +39,8 @@ spec:
                   key: KEYCLOAK_PASSWORD
             - name: IMPORT_FILES_LOCATIONS
               value: /config/realm.json
+            - name: IMPORT_MANAGED_CLIENT
+              value: no-delete
           resources:
             requests:
               cpu: 100m
@@ -55,7 +55,7 @@ spec:
       volumes:
         - name: realm-config
           configMap:
-            name: keycloak-config-cli-dev-realm
+            name: keycloak-config-cli-realm
             items:
               - key: realm.json
                 path: realm.json

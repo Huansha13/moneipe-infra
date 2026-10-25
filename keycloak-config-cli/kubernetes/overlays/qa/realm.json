@@ -1,10 +1,11 @@
 {
-  "realm": "moneipe-dev",
+  "realm": "moneipe-qa",
   "enabled": true,
+  "bruteForceProtected": true,
   "clients": [
     {
       "clientId": "moneipe-frontend",
-      "name": "Moneipe Frontend (dev)",
+      "name": "Moneipe Frontend (qa)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,

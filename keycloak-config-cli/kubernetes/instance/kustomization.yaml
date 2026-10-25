@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: moneipe-keycloak
+
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - keycloak.yaml
+  - ingress.yaml
+
+configMapGenerator:
+  - name: keycloak-login-theme
+    files:
+      - theme.properties=theme-moneipe/login/theme.properties
+      - login.ftl=theme-moneipe/login/login.ftl
+      - login-update-password.ftl=theme-moneipe/login/login-update-password.ftl
+      - error.ftl=theme-moneipe/login/error.ftl

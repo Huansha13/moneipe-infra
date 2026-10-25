@@ -1,16 +1,9 @@
-# Moneipe infrastructure
+# Moneipe Infra
 
-Repositorio para manifiestos de infraestructura y configuración declarativa de Moneipe.
+Manifiestos de Kubernetes y configuración de ambientes para Moneipe.
 
-## Estado
+- `keycloak-config-cli/kubernetes/instance/`: Keycloak nuevo, PostgreSQL, tema e Ingress para K3s.
+- `keycloak-config-cli/kubernetes/overlays/`: realms y Jobs Config CLI por ambiente.
+- [Guía operativa de Keycloak](./keycloak-config-cli/README.md): estado, acceso temporal y comandos principales.
 
-- `keycloak-config-cli/` contiene un ejemplo inicial para importar la configuración del realm de desarrollo.
-- Los manifiestos todavía no se han aplicado al clúster.
-- No agregar credenciales, tokens, usuarios ni datos personales al repositorio.
-- El Keycloak Docker que ya existe en el servidor queda fuera del alcance de esta configuración.
-
-## Componentes
-
-- [Keycloak Config CLI](./keycloak-config-cli/README.md): Job de una sola ejecución para aplicar la configuración del realm `moneipe-dev`.
-
-El frontend se despliega actualmente en Vercel. Los dominios de Vercel y Keycloak todavía deben confirmarse antes de habilitar los redirect URIs del cliente.
+El Keycloak Docker en `/home/frank/docker/moneipe` es independiente: no detenerlo ni modificarlo desde este repositorio. No subir secretos, contraseñas, tokens ni datos personales.
