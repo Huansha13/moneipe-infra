@@ -6,6 +6,7 @@ Organizados primero por **ambiente**, luego por tipo de recurso y microservicio:
 kubernetes/
 ├── dev/
 │   ├── kustomization.yaml
+│   ├── data/mongo-moneipe.yaml
 │   ├── data/postgres-moneipe.yaml
 │   └── ms/
 │       ├── api-gateway/api-gateway.yaml
@@ -27,6 +28,10 @@ de recursos existentes de `api-gateway` y `ms-control-gastos`, y agrega
 como `postgres-moneipe`, un Service headless cuyo DNS resuelve directamente al
 gateway de pods `10.42.0.1`; así se evita el ClusterIP, que no pudo alcanzar el
 PostgreSQL publicado en el mismo nodo.
+MongoDB externo también se publica como el Service headless `mongo-moneipe`,
+que resuelve al mismo gateway de pods en el puerto `27017`. El `MONGO_URI`
+confidencial de `ms-notificaciones` se guarda en el Secret
+`moneipe-notificaciones-mongo`, no en este repositorio.
 
 Los manifiestos de `inversiones` y `notificaciones` permanecen ordenados en
 `dev/ms/`, pero no se agregan automáticamente al despliegue hasta incluirlos

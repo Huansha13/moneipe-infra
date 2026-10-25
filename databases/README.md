@@ -37,6 +37,9 @@ credenciales de QA y producción no se han creado.
 `notificaciones.env` pertenece al cliente Mongo de `ms-notificaciones` y
 contiene la configuración local `MONGO_URI` junto con el issuer de Keycloak.
 En Kubernetes, `MONGO_URI` se obtiene del Secret `moneipe-notificaciones-mongo`.
+El URI del Secret debe usar `mongo-moneipe:27017`; el archivo local conserva
+`localhost:27017` para aplicaciones ejecutadas fuera del clúster. El Service
+headless `mongo-moneipe` resuelve al gateway de pods `10.42.0.1`.
 
 Cada ambiente PostgreSQL tiene un contenedor y un volumen Docker propios. Mover
 estos archivos Compose no mueve los datos: los volúmenes conservan sus nombres
