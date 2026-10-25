@@ -12,6 +12,23 @@ databases/
     └── dev/compose.yaml
 ```
 
+Las credenciales locales se guardan fuera del repositorio, en
+`/home/frank/.config/moneipe/`, agrupadas por servicio:
+
+```text
+databases/postgres/dev/
+├── admin.env
+└── apps/
+    ├── gastos.env
+    ├── inversiones.env
+    ├── notificaciones.env
+    └── usuarios.env
+keycloak/runtime.env
+```
+
+Los directorios tienen permisos `700` y los archivos `600`. No copies estos
+archivos al repositorio ni compartas su contenido.
+
 Cada ambiente PostgreSQL tiene un contenedor y un volumen Docker propios. Mover
 estos archivos Compose no mueve los datos: los volúmenes conservan sus nombres
 explícitos (`db-moneipe-data`, `db-moneipe-qa-data` y
@@ -30,14 +47,14 @@ pero todavía no se han iniciado.
 - Base existente: `moneipe_gastos_dev`
 - Usuario de aplicación: `moneipe_dev`
 - Volumen persistente: `db-moneipe-data`
-- Credenciales: `/home/frank/.config/moneipe/db-moneipe.env` (admin) y `gastos-dev.env` (aplicación), permisos `600`.
+- Credenciales: `/home/frank/.config/moneipe/databases/postgres/dev/admin.env` (admin) y `/home/frank/.config/moneipe/databases/postgres/dev/apps/gastos.env` (aplicación), permisos `600`.
 - K3s: namespace `moneipe-dev`, Secret `moneipe-gastos-db`.
 
 Levantar o consultar dev:
 
 ```bash
 docker compose \
-  --env-file "$HOME/.config/moneipe/db-moneipe.env" \
+  --env-file "$HOME/.config/moneipe/databases/postgres/dev/admin.env" \
   -f /home/frank/moneipe-app/infra/databases/postgres/dev/compose.yaml up -d
 docker compose -f /home/frank/moneipe-app/infra/databases/postgres/dev/compose.yaml ps
 ```
@@ -67,8 +84,8 @@ se usa DNS headless. El nombre DNS completo es
 
 ## QA y producción
 
-- QA tendrá su propio PostgreSQL en el puerto `5433`, volumen `db-moneipe-qa-data` y credencial admin en `/home/frank/.config/moneipe/db-moneipe-qa.env`.
-- Producción tendrá su propio PostgreSQL en el puerto `5434`, volumen `db-moneipe-prd-data` y credencial admin en `/home/frank/.config/moneipe/db-moneipe-prd.env`.
+- QA tendrá su propio PostgreSQL en el puerto `5433`, volumen `db-moneipe-qa-data` y credencial admin en `/home/frank/.config/moneipe/databases/postgres/qa/admin.env`.
+- Producción tendrá su propio PostgreSQL en el puerto `5434`, volumen `db-moneipe-prd-data` y credencial admin en `/home/frank/.config/moneipe/databases/postgres/prd/admin.env`.
 - Los comandos Compose deben apuntar al `compose.yaml` de ese ambiente y a su propio archivo de credenciales.
 
 No iniciar QA ni PRD hasta preparar las credenciales y las bases/usuarios de sus microservicios. Las bases de aplicación y usuarios son propios por microservicio y ambiente; no se comparten contraseñas.
