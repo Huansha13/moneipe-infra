@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../db/dev/db-gastos.yaml
-  - ../api-gateway/dev/api-gateway.yaml
-  - ../control-gastos/dev/ms-control-gastos.yaml
+  - data/postgres-moneipe.yaml
+  - ms/api-gateway/api-gateway.yaml
+  - ms/control-gastos/ms-control-gastos.yaml
+  - ms/usuarios/ms-usuarios.yaml

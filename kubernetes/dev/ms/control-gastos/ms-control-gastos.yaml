@@ -25,7 +25,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
             - name: DB_HOST
-              value: "10.42.0.1"
+              value: postgres-moneipe
             - name: DB_PORT
               value: "5432"
             - name: DB_NAME

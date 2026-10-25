@@ -1,0 +1,33 @@
+name: db-moneipe-mongo
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: db-moneipe-mongo
+    restart: unless-stopped
+    labels:
+      app.kubernetes.io/part-of: moneipe
+      app.kubernetes.io/component: database
+      app.kubernetes.io/environment: dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: moneipe
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Define MONGO_PASSWORD en el env file}
+    ports:
+      - "10.42.0.1:27017:27017"
+    volumes:
+      - db-moneipe-mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  db-moneipe-mongodata:
+    name: db-moneipe-mongodata
+
+networks:
+  db-moneipe-mongo:
+    name: db-moneipe-mongo
+    driver: bridge

@@ -1,31 +1,50 @@
 # Manifiestos Kubernetes de Moneipe (GitOps)
 
-Organizados por **componente** (db, api-gateway, control-gastos, ...) y, dentro de cada uno, por **ambiente** (dev, qa, prd).
+Organizados primero por **ambiente**, luego por tipo de recurso y microservicio:
 
-```
+```text
 kubernetes/
-├── db/
-│   ├── dev/db-gastos.yaml
-│   ├── qa/   (pendiente)
-│   └── prd/  (pendiente)
-├── api-gateway/
-│   ├── dev/api-gateway.yaml
-│   ├── qa/
-│   └── prd/
-└── control-gastos/
-    ├── dev/ms-control-gastos.yaml
-    ├── qa/
-    └── prd/
+├── dev/
+│   ├── kustomization.yaml
+│   ├── data/postgres-moneipe.yaml
+│   └── ms/
+│       ├── api-gateway/api-gateway.yaml
+│       ├── control-gastos/ms-control-gastos.yaml
+│       ├── inversiones/ms-inversiones.yaml
+│       ├── notificaciones/ms-notificaciones.yaml
+│       └── usuarios/ms-usuarios.yaml
+├── qa/
+│   ├── data/
+│   └── ms/
+└── prd/
+    ├── data/
+    └── ms/
 ```
 
-Aplicar un componente en un ambiente:
+Flux reconcilia `./kubernetes/dev`. La Kustomization de `dev` conserva el conjunto
+de recursos existentes de `api-gateway` y `ms-control-gastos`, y agrega
+`ms-usuarios` a la reconciliación. La configuración de PostgreSQL se publica
+como `postgres-moneipe`, un Service headless cuyo DNS resuelve directamente al
+gateway de pods `10.42.0.1`; así se evita el ClusterIP, que no pudo alcanzar el
+PostgreSQL publicado en el mismo nodo.
+
+Los manifiestos de `inversiones` y `notificaciones` permanecen ordenados en
+`dev/ms/`, pero no se agregan automáticamente al despliegue hasta incluirlos
+explícitamente en `kubernetes/dev/kustomization.yaml`.
+
+Validar y aplicar el conjunto administrado de `dev`:
+
 ```bash
-sudo k3s kubectl apply -f kubernetes/db/dev/
-sudo k3s kubectl apply -f kubernetes/api-gateway/dev/
-sudo k3s kubectl apply -f kubernetes/control-gastos/dev/
+kubectl kustomize infra/kubernetes/dev
+sudo k3s kubectl apply -k infra/kubernetes/dev
 ```
 
-Aplicar TODO un ambiente (varios -f):
+Aplicar manualmente un microservicio individual:
+
 ```bash
-sudo k3s kubectl apply -f kubernetes/db/dev/   -f kubernetes/api-gateway/dev/   -f kubernetes/control-gastos/dev/
+sudo k3s kubectl apply -f infra/kubernetes/dev/ms/control-gastos/
 ```
+
+La reorganización no mueve ni modifica las bases de datos Docker. El Service
+anterior `db-gastos` se reemplaza por `postgres-moneipe`; Flux eliminará los
+recursos antiguos al reconciliar la nueva Kustomization.

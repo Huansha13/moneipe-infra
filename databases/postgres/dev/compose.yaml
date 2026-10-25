@@ -1,0 +1,38 @@
+name: db-moneipe
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: db-moneipe-postgres
+    restart: unless-stopped
+    labels:
+      app.kubernetes.io/part-of: moneipe
+      app.kubernetes.io/component: database
+      app.kubernetes.io/environment: dev
+    environment:
+      POSTGRES_USER: moneipe_admin
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Set POSTGRES_ADMIN_PASSWORD in the dev env file}
+      POSTGRES_DB: postgres
+    ports:
+      - "10.42.0.1:5432:5432"
+      - "127.0.0.1:15432:5432"
+      - "192.168.1.113:5432:5432"
+    volumes:
+      - db-moneipe-data:/var/lib/postgresql/data
+    networks:
+      - db-moneipe
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  db-moneipe-data:
+    name: db-moneipe-data
+
+networks:
+  db-moneipe:
+    name: db-moneipe
+    driver: bridge
