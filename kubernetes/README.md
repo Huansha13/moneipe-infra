@@ -32,6 +32,8 @@ MongoDB externo también se publica como el Service headless `mongo-moneipe`,
 que resuelve al mismo gateway de pods en el puerto `27017`. El `MONGO_URI`
 confidencial de `ms-notificaciones` se guarda en el Secret
 `moneipe-notificaciones-mongo`, no en este repositorio.
+Al cambiar ese Secret, incrementa `moneipe.dev/mongo-uri-revision` en el
+Deployment para que Flux cree pods nuevos que lean las variables actualizadas.
 
 Los manifiestos de `inversiones` y `notificaciones` permanecen ordenados en
 `dev/ms/`, pero no se agregan automáticamente al despliegue hasta incluirlos
