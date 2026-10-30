@@ -40,8 +40,6 @@ spec:
                 secretKeyRef:
                   name: moneipe-usuarios-db
                   key: DB_PASSWORD
-            - name: KEYCLOAK_ISSUER_URI
-              value: "https://auth-moneipe-k3-dev.huansha.win/realms/moneipe-dev"
             - name: KEYCLOAK_ADMIN_BASE_URL
               value: "https://auth-moneipe-k3-dev.huansha.win"
             - name: KEYCLOAK_REALM

@@ -31,8 +31,6 @@ spec:
                 secretKeyRef:
                   name: moneipe-notificaciones-mongo
                   key: MONGO_URI
-            - name: KEYCLOAK_ISSUER_URI
-              value: 'https://auth-moneipe-k3-dev.huansha.win/realms/moneipe-dev'
           resources:
             requests: { cpu: 100m, memory: 256Mi }
             limits:   { cpu: 500m, memory: 512Mi }

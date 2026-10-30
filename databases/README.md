@@ -102,10 +102,10 @@ se usa DNS headless. El nombre DNS completo es
 
 No iniciar QA ni PRD hasta preparar las credenciales y las bases/usuarios de sus microservicios. Las bases de aplicación y usuarios son propios por microservicio y ambiente; no se comparten contraseñas.
 
-El PostgreSQL dev está publicado en `10.42.0.1:5432` y también en
-`192.168.1.113:5432`; el último permite conexiones desde la LAN. El acceso local
-desde el Mac puede continuar usando el túnel existente hacia
-`127.0.0.1:15432`. MongoDB dev se publica en `10.42.0.1:27017`. No publiques
-estas bases en Cloudflare Tunnel.
+PostgreSQL dev está publicado en `10.42.0.1:5432` para K3s y en
+`127.0.0.1:15432` para el túnel local. MongoDB dev está publicado en
+`10.42.0.1:27017` para K3s y en `127.0.0.1:27017` para el túnel local. Ninguna
+base se publica en la IP de la LAN; no publiques estas bases en Cloudflare
+Tunnel.
 
 No ejecutes `docker compose down -v`: elimina los datos del volumen asociado.

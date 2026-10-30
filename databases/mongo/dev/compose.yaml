@@ -14,6 +14,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Define MONGO_PASSWORD en el env file}
     ports:
       - "10.42.0.1:27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - db-moneipe-mongodata:/data/db
     healthcheck:
